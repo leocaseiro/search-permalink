@@ -36,10 +36,10 @@ Beta v1 19-Aug-2007:
 
 /* JavaScript Output */
 
-if (!empty($_GET['js'])) {
-	header('Content-Type: text/javascript');
+if (!empty($_GET['sp'])) {
 	define('WP_USE_THEMES', false);
 	require('../../wp-blog-header.php');
+	header('Content-Type: text/javascript');
 ?>var aja_sp_onload = window.onload;
 
 window.onload = function() {
@@ -61,11 +61,14 @@ window.onload = function() {
 		if (theTextNode) {
 			var theFormNode = getFormNode(theTextNode);
 			if (theFormNode) {
-				var theQueryStr = "<?php bloginfo('url'); ?>";
-				if (theTextNode.hasAttribute('value') && (0 < theTextNode.getAttribute('value').length)) {
-					theQueryStr += '/search/'+ encodeURIComponent(theTextNode.getAttribute('value')).replace('%20', '+') +'/';
+				var theQueryStr;
+				theTextNode.onchange = function() {
+					theQueryStr = "<?php bloginfo('url'); ?>";
+					if (theTextNode.value && (0 < theTextNode.value.length)) {
+						theQueryStr += '/search/'+ encodeURIComponent(theTextNode.value).replace('%20', '+') +'/';
+					}
+					theFormNode.setAttribute('onsubmit', 'window.location.assign("'+ theQueryStr +'"); return false;');
 				}
-				theFormNode.setAttribute('onsubmit', 'window.location.assign('+ theQueryStr +'); return false;');
 			}
 		}
 	}
@@ -86,7 +89,7 @@ function aja_spredir() {
 /* JavaScript Insert Callback */
 
 function aja_spjsins() {
-?>	<script type="text/javascript" src="<?php bloginfo('wpurl'); ?>/wp-content/plugins/search-permalink.php?js=1"> </script>
+?>	<script type="text/javascript" src="<?php bloginfo('wpurl'); ?>/wp-content/plugins/search-permalink.php?sp=1"> </script>
 <?php
 }
 

@@ -2,7 +2,7 @@
 /*
 Plugin Name: Search Permalink
 Plugin URI: http://www.ajalapus.com/downloads/search-permalink/
-Version: 1.0.1
+Version: 1.2
 Description: Redirects search form queries to cruft-free permalink <acronym title="Uniform Resource Identifier">URI</acronym>s
 Author: Aja Lorenzo Lapus
 Author URI: http://www.ajalapus.com/
@@ -24,6 +24,8 @@ Author URI: http://www.ajalapus.com/
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 Change Log:
+v1.2 17-Oct-2007:
+	- Added client-side script to lessen server-side processing and redirects.
 v1.0.1 14-Oct-2007:
 	- Support for any combination of permalink and query string requests for search term and page number.
 v1.0 25-Aug-2007:
@@ -31,6 +33,47 @@ v1.0 25-Aug-2007:
 Beta v1 19-Aug-2007:
 	- First beta release of the Search Permalink plugin.
 */
+
+/* JavaScript Output */
+
+if (!empty($_GET['js'])) {
+	header('Content-Type: text/javascript');
+	define('WP_USE_THEMES', false);
+	require('../../wp-blog-header.php');
+?>var aja_sp_onload = window.onload;
+
+window.onload = function() {
+	if (typeof aja_sp_onload == 'function' && aja_sp_onload) {
+		aja_sp_onload();
+	}
+	if (document.getElementById) {
+		function getFormNode(theChildNode) {
+			var theParentNode = theChildNode.parentNode;
+			if ('form' == theParentNode.tagName.toLowerCase()) {
+				return theParentNode;
+			} else if (null == theParentNode) {
+				return;
+			} else {
+				return getFormNode(theParentNode);
+			}
+		}
+		var theTextNode = document.getElementById('s');
+		if (theTextNode) {
+			var theFormNode = getFormNode(theTextNode);
+			if (theFormNode) {
+				var theQueryStr = "<?php bloginfo('url'); ?>";
+				if (theTextNode.hasAttribute('value') && (0 < theTextNode.getAttribute('value').length)) {
+					theQueryStr += '/search/'+ encodeURIComponent(theTextNode.getAttribute('value')).replace('%20', '+') +'/';
+				}
+				theFormNode.setAttribute('onsubmit', 'window.location.assign('+ theQueryStr +'); return false;');
+			}
+		}
+	}
+}<?php
+	exit();
+}
+
+/* Server-side Redirect Callback */
 
 function aja_spredir() {
 	if (is_search()) {
@@ -40,4 +83,14 @@ function aja_spredir() {
 	}
 }
 
+/* JavaScript Insert Callback */
+
+function aja_spjsins() {
+?>	<script type="text/javascript" src="<?php bloginfo('wpurl'); ?>/wp-content/plugins/search-permalink.php?js=1"> </script>
+<?php
+}
+
+/* WordPress Hooks */
+
 add_action('template_redirect', 'aja_spredir');
+add_action('wp_head', 'aja_spjsins');

@@ -1,5 +1,6 @@
 === Search Permalink ===
 Contributors: ajalapus
+Donate link: http://www.ajalapus.com/donate/
 Tags: search, permalink
 Requires at least: 2.2
 Tested up to: 2.2.2

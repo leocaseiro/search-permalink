@@ -2,7 +2,7 @@
 /*
 Plugin Name: Search Permalink
 Plugin URI: http://www.ajalapus.com/downloads/search-permalink/
-Version: 1.2
+Version: 1.1
 Description: Redirects search form queries to cruft-free permalink <acronym title="Uniform Resource Identifier">URI</acronym>s
 Author: Aja Lorenzo Lapus
 Author URI: http://www.ajalapus.com/
@@ -24,7 +24,7 @@ Author URI: http://www.ajalapus.com/
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 Change Log:
-v1.2 17-Oct-2007:
+v1.1 17-Oct-2007:
 	- Added client-side script to lessen server-side processing and redirects.
 v1.0.1 14-Oct-2007:
 	- Support for any combination of permalink and query string requests for search term and page number.
@@ -36,7 +36,7 @@ Beta v1 19-Aug-2007:
 
 /* JavaScript Output */
 
-if (!empty($_GET['sp'])) {
+if ('js' == $_GET['out']) {
 	define('WP_USE_THEMES', false);
 	require('../../wp-blog-header.php');
 	header('Content-Type: text/javascript');
@@ -89,7 +89,7 @@ function aja_spredir() {
 /* JavaScript Insert Callback */
 
 function aja_spjsins() {
-?>	<script type="text/javascript" src="<?php bloginfo('wpurl'); ?>/wp-content/plugins/search-permalink.php?sp=1"> </script>
+?>	<script type="text/javascript" src="<?php bloginfo('wpurl'); ?>/wp-content/plugins/search-permalink.php?out=js"> </script>
 <?php
 }
 

@@ -57,10 +57,9 @@ function searchp_load_js_and_css() {
 /* Server-side Redirect Callback */
 
 function searchp_spredir() {
-	if (is_search()) {
-		$searchp_uri = get_bloginfo('url') .'/search/'. urlencode(get_query_var('s')) . ((get_query_var('paged')) ? '/page/'. get_query_var('paged') .'/' : '/');
-		if (!empty($_GET['s']) || !empty($_GET['paged']))
-			wp_redirect($searchp_uri);
+	if ( is_search() && ! empty( $_GET['s'] ) ) {
+		wp_redirect( home_url('/search/') . urlencode( get_query_var('s') ));
+		exit();
 	}
 }
 

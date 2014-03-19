@@ -1,12 +1,33 @@
 === Search Permalink ===
-Contributors: ajalapus
-Donate link: http://www.ajalapus.com/donate/
+Contributors: leocaseiro, ajalapus
+Donate link: http://leocaseiro.com.br/contato/
 Tags: search, permalink
-Requires at least: 2.2
-Tested up to: 2.2.2
+Requires at least: 3.8.1
+Stable tag: 1.2.0
+Tested up to: 3.8.1
 Stable tag: trunk
 
 Search Permalink redirects search form queries to cruft-free permalink URIs.
+
+== Change Log ==
+= 1.2.0 =
+Rewritten for compatibility with 3.8.1 by Leo Caseiro
+
+= 1.1 | 17-Oct-2007 =
+Added client-side script to lessen server-side processing and redirects.
+
+= 1.1 | 17-Oct-2007 =
+Added client-side script to lessen server-side processing and redirects.
+
+= 1.0.1 | 14-Oct-2007 =
+Support for any combination of permalink and query string requests for search term and page number.
+
+= 1.0 | 25-Aug-2007 =
+Fixed URL encoding bug.
+
+= Beta | 19-Aug-2007 =
+First beta release of the Search Permalink plugin.
+
 
 == Description ==
 

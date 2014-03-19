@@ -1,13 +1,13 @@
 <?php
 /*
 Plugin Name: Search Permalink
-Plugin URI: http://www.ajalapus.com/downloads/search-permalink/
-Version: 1.1
+Plugin URI: https://github.com/leocaseiro/search-permalink
+Version: 1.2.0
 Description: Redirects search form queries to cruft-free permalink <acronym title="Uniform Resource Identifier">URI</acronym>s
-Author: Aja Lorenzo Lapus
-Author URI: http://www.ajalapus.com/
+Author: Leo Caseiro
+Author URI: http://leocaseiro.com.br/
 
-	Copyright 2007 Aja Lorenzo Lapus
+	Copyright 2007 Aja Lorenzo Lapus | Leo Caseiro 2014
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -24,11 +24,13 @@ Author URI: http://www.ajalapus.com/
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 Change Log:
-v1.1 17-Oct-2007:
+v1.2.0 10-Mar-2014:
+	- Rewritten for compatibility with 3.8.1 by Leo Caseiro
+v1.1.0 17-Oct-2007:
 	- Added client-side script to lessen server-side processing and redirects.
 v1.0.1 14-Oct-2007:
 	- Support for any combination of permalink and query string requests for search term and page number.
-v1.0 25-Aug-2007:
+v1.0.0 25-Aug-2007:
 	- Fixed URL encoding bug.
 Beta v1 19-Aug-2007:
 	- First beta release of the Search Permalink plugin.
@@ -36,64 +38,33 @@ Beta v1 19-Aug-2007:
 
 /* JavaScript Output */
 
-if ('js' == $_GET['out']) {
-	define('WP_USE_THEMES', false);
-	require('../../wp-blog-header.php');
-	header('Content-Type: text/javascript');
-?>var aja_sp_onload = window.onload;
 
-window.onload = function() {
-	if (typeof aja_sp_onload == 'function' && aja_sp_onload) {
-		aja_sp_onload();
-	}
-	if (document.getElementById) {
-		function getFormNode(theChildNode) {
-			var theParentNode = theChildNode.parentNode;
-			if ('form' == theParentNode.tagName.toLowerCase()) {
-				return theParentNode;
-			} else if (null == theParentNode) {
-				return;
-			} else {
-				return getFormNode(theParentNode);
-			}
-		}
-		var theTextNode = document.getElementById('s');
-		if (theTextNode) {
-			var theFormNode = getFormNode(theTextNode);
-			if (theFormNode) {
-				var theQueryStr;
-				theTextNode.onchange = function() {
-					theQueryStr = "<?php bloginfo('url'); ?>";
-					if (theTextNode.value && (0 < theTextNode.value.length)) {
-						theQueryStr += '/search/'+ encodeURIComponent(theTextNode.value).replace('%20', '+') +'/';
-					}
-					theFormNode.setAttribute('onsubmit', 'window.location.assign("'+ theQueryStr +'"); return false;');
-				}
-			}
-		}
-	}
-}<?php
-	exit();
+// Make sure we don't expose any info if called directly
+if ( !function_exists( 'add_action' ) ) {
+	echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
+	exit;
+}
+
+
+function searchp_load_js_and_css() {
+	wp_enqueue_script( 'searchp_functions', plugins_url( 'js/functions.js' , dirname(__FILE__) ), array('jquery') );
+	$search = array(
+		'url' => get_bloginfo('url')
+	);
+	wp_localize_script('functions', 'Search',  $search);
 }
 
 /* Server-side Redirect Callback */
 
-function aja_spredir() {
+function searchp_spredir() {
 	if (is_search()) {
-		$aja_uri = get_bloginfo('url') .'/search/'. urlencode(get_query_var('s')) . ((get_query_var('paged')) ? '/page/'. get_query_var('paged') .'/' : '/');
+		$searchp_uri = get_bloginfo('url') .'/search/'. urlencode(get_query_var('s')) . ((get_query_var('paged')) ? '/page/'. get_query_var('paged') .'/' : '/');
 		if (!empty($_GET['s']) || !empty($_GET['paged']))
-			wp_redirect($aja_uri);
+			wp_redirect($searchp_uri);
 	}
-}
-
-/* JavaScript Insert Callback */
-
-function aja_spjsins() {
-?>	<script type="text/javascript" src="<?php bloginfo('wpurl'); ?>/wp-content/plugins/search-permalink.php?out=js"> </script>
-<?php
 }
 
 /* WordPress Hooks */
 
-add_action('template_redirect', 'aja_spredir');
-add_action('wp_head', 'aja_spjsins');
+add_action('template_redirect', 'searchp_spredir');
+add_action('wp_head', 'searchp_load_js_and_css');
